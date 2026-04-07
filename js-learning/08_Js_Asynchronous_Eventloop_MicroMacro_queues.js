@@ -104,12 +104,11 @@ Why:
 // =====================================================
 
 // 1) Synchronous
-console.log(1)
+console.log(1)///
 
 // setTimeout -> macrotask
 setTimeout(() => {
     console.log(2)
-
     // Promise.then inside timeout -> microtask
     Promise.resolve().then(() => {
         console.log(3)
@@ -119,7 +118,7 @@ setTimeout(() => {
 // Promise chain -> microtasks
 Promise.resolve()
     .then(() => {
-        console.log(4)
+        console.log(4)//
     })
     .then(() => {
         console.log(5)
@@ -127,40 +126,87 @@ Promise.resolve()
 
 async function runExample2() {
     // synchronous part of async function
-    console.log(6)
+    console.log(6)//
 
     // pause async function, continue later as microtask
     await Promise.resolve()
 
-    console.log(7)
+    console.log(7)///
 
     // new microtask created after async continuation
     Promise.resolve().then(() => {
         console.log(8)
     })
 }
-
 runExample2()
-
 new Promise((resolve) => {
     // Promise executor runs synchronously
-    console.log(9)
+    console.log(9)         /////
+
     resolve()
-    console.log(10)
+    console.log(10)////
 }).then(() => {
     // .then -> microtask
-    console.log(11)
+    console.log(11)//
 })
 
 // last synchronous line
-console.log(12)
+console.log(12)///
 
 /*
 Expected order:
 1, 6, 9, 10, 12, 4, 7, 11, 5, 8, 2, 3
 */
 
+console.log(1)////
 
+setTimeout(() => {
+    console.log(2)//
+
+    Promise.resolve().then(() => {
+        console.log(3)//
+    })
+}, 0)
+
+Promise.resolve()
+    .then(() => {
+        console.log(4) ///
+        return Promise.resolve()
+    })
+    .then(() => {
+        console.log(5) ///                                                   M | m 187
+    })
+
+async function run() {
+    console.log(6)///
+
+    await null
+
+    console.log(7) //
+
+    setTimeout(() => {
+        console.log(8)
+    }, 0)
+
+    Promise.resolve().then(() => {
+        console.log(9)///
+    })
+}
+
+run()
+
+new Promise((resolve) => {
+    console.log(10)//
+    resolve()
+})
+    .then(() => {
+        console.log(11)//
+    })
+    .then(() => {
+        console.log(12)//
+    })
+
+console.log(13)//
 
 // =====================================================
 // KEY TAKEAWAYS
